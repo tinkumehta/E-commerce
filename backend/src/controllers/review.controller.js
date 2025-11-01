@@ -65,3 +65,41 @@ export const getProductReviews = async (req, res, next) => {
         next(error);
     }
 }
+
+// get top rated products using aggregation pipeline
+export const getTopRatedProducts = async (req, res, next) => {
+    try {
+        const product = await Product.aggregate([
+            {
+                $match: {
+                    numofReviews: {$gt: 0}
+                }
+            },
+            {
+                $addFields : {
+                    averageRating: {$round: ["$ratings", 1]}
+                }
+            },
+            {
+                $sort: {averageRating: -1, numofReviews: -1}
+            },
+            {
+                $limit: 10
+            },
+            {
+                $project:{
+                    name: 1,
+                    price: 1,
+                    images: 1,
+                    ratings: 1,
+                    numofReviews : 1,
+                    averageRating: 1
+                }
+            }
+        ]);
+
+        res.json(product);
+    } catch (error) {
+        next(error);
+    }
+}
