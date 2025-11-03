@@ -6,7 +6,7 @@ import { config } from 'dotenv'
 import connectDB from './config/database.js'
 
 
-import userRoutes from './routes/user.routes.js'
+
 
 config();
 connectDB();
@@ -32,11 +32,13 @@ app.use(express.json({limit: '10mb'}));
 app.use(express.urlencoded({extended: true}));
 
 // routes
-app.use("/", (req, res) => {
-    res.status(201).json({message : "Server is running!"})
-});
+import userRoutes from './routes/user.routes.js'
+import reviewRoutes from './routes/reviews.routes.js'
+import paymentsRoutes from './routes/payments.routes.js'
 
 app.use("/api/auth", userRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/payment", paymentsRoutes);
 
 
 const PORT = process.env.PORT || 8000;
