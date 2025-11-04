@@ -29,7 +29,7 @@ export const createReview = async (req, res, next) => {
   
       // create review
       const review = new Reviews({
-          user : req.userId,
+          user : userId,
           product : productId,
           rating : Number(rating),
           comment ,
@@ -48,7 +48,7 @@ export const createReview = async (req, res, next) => {
   
       await product.save();
   
-      res.status(201).json(createReview);
+      res.status(201).json(createdReviews);
   } catch (error) {
     next(error);
   }
@@ -59,10 +59,10 @@ export const getProductReviews = async (req, res, next) => {
         const productId = req.params.productId;
 
         const reviews = await Reviews.find({product : productId}).populate('user', 'name').sort({createdAt: -1});
-
+        
         res.json(reviews);
     } catch (error) {
-        next(error);
+        next(error)
     }
 }
 

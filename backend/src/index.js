@@ -35,10 +35,12 @@ app.use(express.urlencoded({extended: true}));
 import userRoutes from './routes/user.routes.js'
 import reviewRoutes from './routes/reviews.routes.js'
 import paymentsRoutes from './routes/payments.routes.js'
+import productRoutes from './routes/product.routes.js'
 
 app.use("/api/auth", userRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/payment", paymentsRoutes);
+app.use("/api/products", productRoutes);
 
 
 const PORT = process.env.PORT || 8000;

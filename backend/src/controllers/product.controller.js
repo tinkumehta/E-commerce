@@ -1,4 +1,4 @@
-import Product from "../models/product.models";
+import Product from "../models/product.models.js";
 import cloudinary from '../config/cloudinary.js';
 
 // get all products with filtering , pagination and search
@@ -76,7 +76,7 @@ export const createProducts = async (req, res, next) => {
 
         const createdProduct = await product.save();
 
-        res.status(201).json(createProducts);
+        res.status(201).json(createdProduct);
 
     } catch (error) {
         next(error);
