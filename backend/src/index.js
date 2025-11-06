@@ -39,7 +39,7 @@ import productRoutes from './routes/product.routes.js'
 
 app.use("/api/auth", userRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/payment", paymentsRoutes);
+app.use("/api/payments", paymentsRoutes);
 app.use("/api/products", productRoutes);
 
 
