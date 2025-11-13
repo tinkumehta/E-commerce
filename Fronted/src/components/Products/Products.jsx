@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function Products() {
+export default function Products() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(1);
@@ -17,28 +17,29 @@ function Products() {
 
   const fetchProducts = async () => {
     try {
-        setLoading(true);
-        setError("");
+      setLoading(true);
+      setError("");
 
-        const params = new URLSearchParams({
-            pageNumber: page,
-            ...(keyword && {keyword}),
-            ...(category && {category}),
-            ...(minPrice && {minPrice}),
-            ...(maxPrice && {maxPrice}),
-            ...(sortBy && {sortBy}),
-        });
+      const params = new URLSearchParams({
+        pageNumber: page,
+        ...(keyword && { keyword }),
+        ...(category && { category }),
+        ...(minPrice && { minPrice }),
+        ...(maxPrice && { maxPrice }),
+        ...(sortBy && { sortBy }),
+      });
 
-        const res = await fetch(`/api/products?${params.toString()}`);
-        if (!res.ok) throw new Error("Failed to fetch products");
+      const res = await fetch(`/api/products?${params.toString()}`);
+      if (!res.ok) throw new Error("Failed to fetch products");
 
-        const data = await res.json();
-        setProducts(data.products);
-    } catch (error) {
-        console.error(err);
+      const data = await res.json();
+      setProducts(data.products);
+      setPages(data.pages);
+    } catch (err) {
+      console.error(err);
       setError("❌ Could not load products. Please try again.");
-    } finally{
-        setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,14 +50,14 @@ function Products() {
   const clearFilters = () => {
     setKeyword("");
     setCategory("");
-    setMaxPrice("");
     setMinPrice("");
+    setMaxPrice("");
     setSortBy("");
     setPage(1);
   };
 
   return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -271,7 +272,5 @@ function Products() {
         )}
       </div>
     </div>
-  )
+  );
 }
-
-export default Products

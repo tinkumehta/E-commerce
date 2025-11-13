@@ -11,55 +11,62 @@ export const AuthProvider = ({children}) => {
         try {
             const res = await axios.get('/api/auth/profile', {
                 headers: {
-                    Authorization : `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             setUser(res.data);
         } catch (error) {
             setUser(null);
-        } finally{
+        } finally {
             setLoading(false);
         }
     }
 
-    const register = async () => {
-        const res = await axios.post('/api/auth/register', FormData, {
-            headers: {'Content-Type' : 'application/json'}
-        });
-        localStorage.setItem('token', res.data.token);
-        await getCurrentUser();
+    const register = async (formData) => {
+        const res = await axios.post('/api/auth/register',  formData, {
+            headers: { 'Content-Type' : 'application/json'},
+        }
+    );
+    localStorage.setItem('token', res.data.token);
+    await getCurrentUser(); // Immediately update
     };
 
     const login = async (email, password) => {
         const res = await axios.post('/api/auth/login', {
             email,
-            password
+            password,
         });
+        //console.log(res.data);
+        
         localStorage.setItem('token', res.data.token);
         await getCurrentUser();
-    }
+    };
 
-    const logout = async () => {
+    const logout =async () => {
         try {
             await axios.post('/api/auth/logout');
             localStorage.removeItem('token');
             setUser(null);
+            
         } catch (error) {
-            console.error('Logout error', error);
+            console.error('Logout error', error)
         }
     };
 
     useEffect(() => {
         if (localStorage.getItem('token')) {
             getCurrentUser();
-        } else{
+        } else {
             setLoading(false);
         }
     }, []);
 
-    register (
-        <AuthContext.Provider value={{register, user, login, logout, loading}}>
+    return (
+        <AuthContext.Provider
+          value={{user, loading, register, login, logout}}
+        >
             {children}
         </AuthContext.Provider>
-    )
+    );
+    
 }

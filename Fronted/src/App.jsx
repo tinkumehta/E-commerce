@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
 
 import { Login, Register, Footer,
-   Header, ProductDetails, ProductCreate, 
+   Header, ProductDetails, ProductCreate, Payment,
    Products, Profile } from './components'
 
 import ProtectedRoute from './components/Pages/PrivateRoutes'
@@ -34,10 +34,18 @@ function App() {
          }
          />
         <Route
-         path='/product'
+         path='/'
          element={
           <ProtectedRoute>
             <Products/>
+          </ProtectedRoute>
+         }
+         />
+        <Route
+         path='/p'
+         element={
+          <ProtectedRoute>
+            <Payment/>
           </ProtectedRoute>
          }
          />

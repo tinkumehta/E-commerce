@@ -6,45 +6,46 @@ import cloudinary from '../config/cloudinary.js';
 export const getProducts = async (req, res, next) => {
     try {
         const pageSize = 12;
-        const page = Number(req.query.pageNumber) || 1;
+        const page  = Number(req.query.pageNumber) || 1;
 
         const keyword = req.query.keyword ? {
             name : {
-                $regex: req.query.keyword ,
+                $regex: req.query.keyword,
                 $options: 'i'
             }
         }
         : {};
-        const categoryFilter = req.query.category ? {category : req.query.category} : {};
 
-        const priceFilter = {};
-        if (req.query.minPrice) {
-            priceFilter.$gte = Number(req.query.minPrice);
-        }
-        if (req.query.maxPrice) {
-            priceFilter.$lte = Number(req.query.maxPrice);
-        }
-        if (Object.keys(priceFilter).length >0) {
-            keyword.price = priceFilter;
-        }
+      const categoryFilter = req.query.category ? {category : req.query.category}   : {};
 
-        const count = await Product.countDocuments({...keyword, ...categoryFilter});
+      const priceFilter = {};
+      if (req.query.minPrice) {
+        priceFilter.$gte = Number(req.query.minPrice);
+      }
+      if (req.query.maxPrice) {
+        priceFilter.$lte = Number(req.query.maxPrice);
+      }
+      if (Object.keys(priceFilter).length > 0) {
+        keyword.price = priceFilter;
+      }
 
-        const product = await Product.find({...keyword, ...categoryFilter})
-        .limit(pageSize)
-        .skip(pageSize * (page -1))
-        .populate('reviews')
+      const count = await Product.countDocuments({...keyword, ...categoryFilter});
 
-        res.json({
-            product,
-            page,
-            pages : Math.ceil(count/pageSize),
-            total : count
-        });
+      const products = await Product.find({...keyword, ...categoryFilter})
+      .limit(pageSize)
+      .skip(pageSize * (page -1))
+      .populate('reviews')
+
+      res.json({
+        products,
+        page,
+        pages : Math.ceil(count/pageSize),
+        total : count
+      });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const createProducts = async (req, res, next) => {
     try {
@@ -166,9 +167,9 @@ export const getProduct = async (req, res, next) => {
         if (product) {
             res.json(product);
         } else{
-            res.status(404).json({message: 'Product not found'})
+            res.status(404).json({message : 'Product not found'});
         }
     } catch (error) {
         next(error);
     }
-}
+};

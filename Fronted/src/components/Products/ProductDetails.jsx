@@ -1,36 +1,43 @@
+// src/pages/ProductDetails.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchProduct, deleteProduct } from "./ProductService";
+import Review from "../Review/Review";
+import GetReview from "../Review/GetReview";
 import Payment from "../Payment/CreatePayment";
 
-function ProductDetails() {
-    const {id} = useParams();
-    const navigate = useNavigate();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [quantity, setQuantity] = useState(1);
 
-    useEffect(() => {
-        const loadProduct = async () => {
-            try {
-                setLoading(true);
-                const data = await fetchProduct(id);
+export default function ProductDetails() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
-                setProduct(data);
-                setError(null);
-            } catch (error) {
-                setError("Product not found")
-                setProduct(null);
-            } finally{
-                setLoading(false);
-            }
-        };
-        loadProduct();
-    }, [id]);
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProduct(id);
+        //console.log(data);
+        
+        setProduct(data);
+        setError(null);
+      } catch (err) {
+        setError("Product not found");
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadProduct();
+  }, [id]);
 
-     if (loading) {
+
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
         <div className="max-w-6xl mx-auto">
@@ -78,6 +85,7 @@ function ProductDetails() {
       </div>
     );
   }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -246,5 +254,3 @@ function ProductDetails() {
     </div>
   );
 }
-
-export default ProductDetails

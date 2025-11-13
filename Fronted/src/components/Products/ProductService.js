@@ -1,15 +1,17 @@
+// src/services/productService.js
 import axios from "axios";
 
-export const fetchProducts = async (params ={}) => {
-    const query = new URLSearchParams(params).toString();
-    const res = await axios.get(`/api/products?${query}`);
-    return res.data;
-}
+export const fetchProducts = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  const res = await axios.get(`/api/products?${query}`);
+  return res.data;
+};
 
 export const fetchProduct = async (id) => {
-    const res = await axios.get(`/api/products/${id}`);
-    return res.data;
-}
+  const res = await axios.get(`/api/products/${id}`);
+  return res.data;
+};
+
 
 export  const deleteProduct = async (id) => {
   if (!window.confirm("Are you sure you want to delete this product?")) return;
