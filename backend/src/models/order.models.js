@@ -46,7 +46,7 @@ import mongoose, {Schema} from "mongoose";
                 type: String,
                 required: true
             },
-            state: {
+            country: {
                 type: String,
                 required: true
             },

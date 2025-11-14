@@ -1,108 +1,119 @@
-import React, { useContext, useState } from 'react'
-import { AuthContext } from '../../context/AuthContext'
-import axios from 'axios';
+import { useContext, useState } from "react";
+import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
-function Payment({product, quantity}) {
-    const {user} = useContext(AuthContext);
-    const [address, setAddress] = useState({
-        address: "",
-        city: "",
-        postalCode: "",
-        state: "",
-    });
-    const [loading, setLoading] = useState(false);
-    const token = localStorage.getItem("token");
+export default function Payment({ product, quantity }) {
+  const {user} = useContext(AuthContext);
+  const [address, setAddress] = useState({
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("token");
 
-    const handleChange = (e) => {
-        setAddress({...address, [e.target.name]: e.target.value});
-    };
+  //console.log(user);
+  
+  // Handle address form input
+  const handleChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
+  };
 
-    const handlePayment = async () => {
-        try {
-            if (!product) {
-                alert("Product details not found");
-                return;
-            }
+  const handlePayment = async () => {
+    try {
+      if (!product) {
+        alert("Product details not found!");
+        return;
+      }
 
-            // basic form validation
-            if (!address.address || !address.city || !address.postalCode ||!address.state) {
-                alert("Please fill all shipping fields");
-            }
-            setLoading (true);
+      // Basic form validation
+      if (!address.address || !address.city || !address.postalCode || !address.country) {
+        alert("Please fill all shipping fields!");
+        return;
+      }
 
-            const orderData = {
-                items: [
-                    {
-                        name: product.name,
-                        quantity: quantity || 1,
-                        price: product.price,
-                        image: product.image || product.images?.[0]?.url,
-                        product: product._id,
-                    },
-                ],
-                shippingAddress: address,
-                itemsPrice: product.price * (quantity),
-                taxPrice: 15,
-                shippingPrice: 10,
-                totalAmount: product.price * (quantity ||1) +25,
-                currency: "INR",
-            };
+      setLoading(true);
 
-            const config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            };
+      const orderData = {
+        items: [
+          {
+            name: product.name,
+            quantity: quantity || 1,
+            price: product.price,
+            image: product.image || product.images?.[0]?.url,
+            product: product._id,
+          },
+        ],
+        shippingAddress: address,
+        itemsPrice: product.price * (quantity),
+        taxPrice: 15,
+        shippingPrice: 10,
+        totalAmount: product.price * (quantity || 1) + 25,
+        currency: "INR",
+      };
 
-            // Create Razorpay order
-            const {data} = await axios.post("/api/payments/create-order",
-            orderData,
-            config
-            );
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-            // Razorpay payment options
-            const options = {
-                key: data.razorpayOrder.key,
-                amount: data.razorpayOrder.amount,
-                currency: data.razorpayOrder.currency,
-                name: "Shop my side",
-                description: `${product.name}`,
-                order_id: data.razorpayOrder.id,
-                handler: async function (response) {
-                    // razorpay returns success data
-                    const verifyRes = await axios.post('/api/payments/v', {
-                        orderId: order._id,
-                    },
-                    {
-                        headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}
-                    }
-                );
-                alert("✅ Payment successful!")
-                },
-                prefill: {
-                    name: user.name,
-                    email: user.email ,
-                    contact: "9990009990",
-                },
-                theme: {
-                    color: "#3399cc",
-                },
-            };
+      // Create Razorpay order
+      const { data } = await axios.post(
+        "/api/payments/create-order",
+        orderData,
+        config
+      );
+     // console.log(data);
+      
 
-            const razorpay = new window.Razorpay(options);
-            razorpay.open();
-        } catch (error) {
-            console.error("Payment Error:", error);
-            alert("Error creating order or opening Razorpay!");
-        } finally{
-            setLoading(false);
+      // Razorpay payment options
+      const options = {
+        key: data.razorpayOrder.key,
+        amount: data.razorpayOrder.amount,
+        currency: data.razorpayOrder.currency,
+        name: "Shop my side",
+        description: ` ${product.name}`,
+        order_id: data.razorpayOrder.id,
+        handler: async function (response) {
+          // razorpay returns success data
+          const verifyRes = await axios.post(
+            `/api/payments/v`,
+            {
+              orderId: order._id,
+        
+            },
+             {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         }
-    };
+          );
+          alert("✅ Payment successful!");
+         // console.log("Payment Details:", response);
+        },
+        prefill: {
+          name: user.name,
+          email: user.email || 'aaa@gmail.com',
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
 
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error) {
+      console.error("Payment Error:", error);
+      alert("Error creating order or opening Razorpay!");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-      <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
+    <div className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10">
       <h2 className="text-2xl font-bold mb-4 text-center">Payment Details</h2>
 
       {/* Product Info */}
@@ -145,9 +156,9 @@ function Payment({product, quantity}) {
       />
       <input
         type="text"
-        name="state"
+        name="country"
         placeholder="state"
-        value={address.state}
+        value={address.country}
         onChange={handleChange}
         className="border p-2 w-full mb-3 rounded"
       />
@@ -160,7 +171,5 @@ function Payment({product, quantity}) {
         {loading ? "Processing..." : "Pay Now"}
       </button>
     </div>
-  )
+  );
 }
-
-export default Payment
